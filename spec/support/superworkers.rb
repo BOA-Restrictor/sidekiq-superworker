@@ -1,10 +1,11 @@
+# frozen_string_literal: true
 # Create dummy Sidekiq worker classes: Worker1..Worker9
-(1..9).each do |i|
+(1..5).each do |i|
   class_name = "Worker#{i}"
   klass = Class.new do
     include Sidekiq::Worker
 
-    sidekiq_options :queue => 'sidekiq_superworker_test'
+    sidekiq_options queue: 'sidekiq_superworker_test'
 
     def perform
       nil
@@ -18,7 +19,7 @@ end
 class FailingWorker
   include Sidekiq::Worker
 
-  sidekiq_options :queue => 'sidekiq_superworker_test'
+  sidekiq_options queue: 'sidekiq_superworker_test'
 
   def perform
     raise RuntimeError
@@ -31,22 +32,14 @@ Sidekiq::Superworker::Worker.define(:SimpleSuperworker, :first_argument, :second
   Worker2 :second_argument
 end
 
-
 # For testing complex blocks
 Sidekiq::Superworker::Worker.define(:ComplexSuperworker, :first_argument, :second_argument) do
   Worker1 :first_argument do       # 1
     Worker2 :second_argument       # 2
     Worker3 :second_argument do    # 3
       Worker4 :first_argument      # 4
-      parallel do                  # 5
-        Worker5 :first_argument    # 6
-        Worker6 :first_argument do # 7
-          Worker7 :first_argument  # 8
-          Worker8 :first_argument  # 9
-        end
-      end
     end
-    Worker9 :first_argument        # 10
+    Worker5 :first_argument        # 5
   end
 end
 
@@ -78,12 +71,6 @@ end
 
 # For testing exceptions
 Sidekiq::Superworker::Worker.define(:FailingSuperworker, :first_argument) do
-  Worker1 :first_argument do        # 1
-    parallel do                     # 2
-      FailingWorker :first_argument # 3
-      Worker2 :first_argument       # 4
-    end
-  end
-  Worker3 :first_argument           # 5
+  Worker1 :first_argument           # 1
+  Worker2 :first_argument           # 2
 end
-

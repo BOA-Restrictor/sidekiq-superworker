@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Sidekiq
   module Superworker
     module WorkerHelpers
@@ -6,7 +7,7 @@ module Sidekiq
       end
 
       def clean_datastores
-        Sidekiq.redis { |conn| conn.flushdb }
+        Sidekiq.redis(&:flushdb)
         @queue.clear
       end
 
@@ -35,34 +36,34 @@ module Sidekiq
       end
 
       def subjobs_to_indexed_hash(subjobs)
-        attributes = [
-          :subjob_id,
-          :parent_id,
-          :children_ids,
-          :next_id,
-          :subworker_class,
-          :superworker_class,
-          :arg_keys,
-          :arg_values,
-          :status,
-          :descendants_are_complete
+        attributes = %i[
+          subjob_id
+          parent_id
+          children_ids
+          next_id
+          subworker_class
+          superworker_class
+          arg_keys
+          arg_values
+          status
+          descendants_are_complete
         ]
 
         hash_array = subjobs.collect do |subjob|
-          attributes.inject({}) { |hash, attribute| hash[attribute] = subjob.send(attribute); hash }
+          attributes.each_with_object({}) { |attribute, hash| hash[attribute] = subjob.send(attribute); }
         end
         add_indexes_to_subjobs_hash_array(hash_array)
       end
 
       def add_indexes_to_subjobs_hash_array(subjobs_array)
-        subjobs_array.inject({}) { |hash, record_hash| hash[record_hash[:subjob_id]] = record_hash; hash }
+        subjobs_array.each_with_object({}) { |record_hash, hash| hash[record_hash[:subjob_id]] = record_hash; }
       end
 
       def subjob_statuses_should_equal(hash)
         expected_statuses = {}
         hash.each do |ids, status|
           ids = [ids] unless ids.is_a?(Enumerable)
-          ids.each { |id| expected_statuses[id] = status}
+          ids.each { |id| expected_statuses[id] = status }
         end
         actual_statuses = Hash[Sidekiq::Superworker::Subjob.all.sort_by(&:subjob_id).collect { |subjob| [subjob.subjob_id, subjob.status] }]
         actual_statuses.should == expected_statuses

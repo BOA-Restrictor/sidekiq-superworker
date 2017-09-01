@@ -1,9 +1,10 @@
+# frozen_string_literal: true
 module Sidekiq
   module Superworker
     class DSLHash
       attr_accessor :record_id
 
-      def initialize(hash, args={})
+      def initialize(hash, args = {})
         @hash = hash
         @args = args
       end
@@ -21,7 +22,7 @@ module Sidekiq
 
       private
 
-      def nested_hash_to_records(nested_hash, options={})
+      def nested_hash_to_records(nested_hash, options = {})
         return @records if nested_hash.blank?
 
         defaults = {
@@ -44,7 +45,7 @@ module Sidekiq
               arg_key
             end
           end
-          
+
           @records[id] = {
             subjob_id: id,
             subworker_class: value[:subworker_class].to_s,
@@ -98,7 +99,7 @@ module Sidekiq
 
           @record_id += 1
           last_subjob_id = nil
-          subjobs.values.each_with_index do |subjob, index|
+          subjobs.values.each_with_index do |subjob, _index|
             subjob_id = @record_id
             @record_id += 1
             subjob = subjob.dup
@@ -115,7 +116,7 @@ module Sidekiq
 
           children_ids << batch_child_id
         end
-        
+
         children_ids
       end
 
@@ -123,14 +124,14 @@ module Sidekiq
       # batch iterations
       def get_batch_iteration_arg_value_arrays(batch_keys_to_iteration_keys)
         batch_keys = batch_keys_to_iteration_keys.keys
-        batch_keys_to_batch_values = @args.slice(*(batch_keys))
+        batch_keys_to_batch_values = @args.slice(*batch_keys)
         batch_values = batch_keys_to_batch_values.values
         batch_values_to_batch_arrays(batch_values)
       end
 
       def rewrite_ids_of_nested_hash(nested_hash)
         new_hash = {}
-        nested_hash.each do |old_record_id, record|
+        nested_hash.each do |_old_record_id, record|
           @record_id += 1
           parent_record_id = @record_id
           new_hash[parent_record_id] = record

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Sidekiq
   module Superworker
     class SuperjobProcessor
@@ -5,11 +6,11 @@ module Sidekiq
         :superworker
       end
 
-      def self.create(superjob_id, superworker_class_name, args, subjobs, options={})
+      def self.create(superjob_id, superworker_class_name, args, subjobs, options = {})
         Superworker.debug "Superworker ##{superjob_id}: Create"
-        
+
         options ||= {}
-        
+
         # If sidekiq_monitor is being used, create a Sidekiq::Monitor::Job for the superjob
         if defined?(Sidekiq::Monitor)
           now = Time.now
@@ -34,7 +35,7 @@ module Sidekiq
         Superworker.debug "Superworker ##{superjob_id}: Complete"
 
         Subjob.delete_subjobs_for(superjob_id) if Superworker.options[:delete_subjobs_after_superjob_completes]
-        
+
         # Set the superjob Sidekiq::Monitor::Job as being complete
         if defined?(Sidekiq::Monitor)
           job = Sidekiq::Monitor::Job.where(queue: queue_name, jid: superjob_id).first

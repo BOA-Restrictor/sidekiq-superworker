@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Sidekiq
   module Superworker
     class SubjobProcessor
@@ -6,18 +8,9 @@ module Sidekiq
           Superworker.debug "#{subjob.to_info}: Trying to enqueue"
           # Only enqueue subjobs that aren't running, complete, etc
           return unless subjob.status == 'initialized'
-          
-          Superworker.debug "#{subjob.to_info}: Enqueueing"
-          # If this is a parallel subjob, enqueue all of its children
-          if subjob.subworker_class == 'parallel'
-            subjob.update_attribute(:status, 'running')
 
-            Superworker.debug "#{subjob.to_info}: Enqueueing parallel children"
-            jids = subjob.children.collect do |child|
-              enqueue(child)
-            end
-            jid = jids.first
-          elsif subjob.subworker_class == 'batch'
+          Superworker.debug "#{subjob.to_info}: Enqueueing"
+          if subjob.subworker_class == 'batch'
             subjob.update_attribute(:status, 'running')
 
             Superworker.debug "#{subjob.to_info}: Enqueueing batch children"
@@ -102,31 +95,27 @@ module Sidekiq
           end
 
           parent = subjob.parent
-          is_child_of_parallel = parent && parent.subworker_class == 'parallel'
 
           # If a parent exists, check whether this subjob's siblings are all complete
           if parent
-            siblings_descendants_are_complete = parent.children.all? { |child| child.descendants_are_complete }
+            siblings_descendants_are_complete = parent.children.all?(&:descendants_are_complete)
             if siblings_descendants_are_complete
               Superworker.debug "#{subjob.to_info}: Parent (#{parent.to_info}) is complete"
               descendants_are_complete(parent)
-              parent.update_attribute(:status, 'complete') if is_child_of_parallel
             end
           end
 
-          unless is_child_of_parallel
-            # If a next subjob is present, enqueue it
-            next_subjob = subjob.next
-            if next_subjob
-              enqueue(next_subjob)
-              return
-            end
+          # If a next subjob is present, enqueue it
+          next_subjob = subjob.next
+          if next_subjob
+            enqueue(next_subjob)
+            return
+          end
 
-            # If there isn't a parent, then, this is the final subjob of the superjob
-            unless parent
-              Superworker.debug "#{subjob.to_info}: Superjob is complete"
-              SuperjobProcessor.complete(subjob.superjob_id)
-            end
+          # If there isn't a parent, then, this is the final subjob of the superjob
+          unless parent
+            Superworker.debug "#{subjob.to_info}: Superjob is complete"
+            SuperjobProcessor.complete(subjob.superjob_id)
           end
         end
 

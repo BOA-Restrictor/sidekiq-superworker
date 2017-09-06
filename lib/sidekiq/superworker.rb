@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'sidekiq'
 
 directory = File.dirname(File.absolute_path(__FILE__))
@@ -11,7 +12,7 @@ module Sidekiq
       delete_subjobs_after_superjob_completes: true,
       subjob_redis_prefix: 'subjob',
       superjob_expiration: nil
-    }
+    }.freeze
 
     def self.options
       @options ||= DEFAULTS.dup
@@ -28,7 +29,6 @@ module Sidekiq
     def self.debug(message)
       logger.debug(message)
     end
-
   end
 end
 

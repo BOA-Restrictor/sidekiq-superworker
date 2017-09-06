@@ -1,8 +1,9 @@
+# frozen_string_literal: true
 module Sidekiq
   module Superworker
     class Logging
       class Pretty < Logger::Formatter
-        def call(severity, time, program_name, message)
+        def call(severity, _time, _program_name, message)
           "#{Time.now.utc.iso8601} Superworker #{severity}: #{message}\n"
         end
       end

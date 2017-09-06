@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Sidekiq
   module Superworker
     class DSLParser
@@ -14,7 +15,7 @@ module Sidekiq
         fiber = Fiber.new do
           @dsl_evaluator.instance_eval(&block)
         end
-        
+
         nested_hash = {}
         while (method_result = fiber.resume)
           add_method_result_to_nested_hash(nested_hash, method_result)
@@ -34,7 +35,7 @@ module Sidekiq
 
         # For superworkers nested within other superworkers, we'll take the subworkers' nested_hash,
         # adjust their ids to fit in with our current @record_id value, and add them into the tree.
-        unless [:parallel, :batch].include?(subworker_type)
+        unless [:batch].include?(subworker_type)
           subworker_class = subworker_type.to_s.constantize
           if subworker_class.respond_to?(:is_a_superworker?) && subworker_class.is_a_superworker?
             dsl_hash = DSLHash.new(subworker_class.nested_hash)

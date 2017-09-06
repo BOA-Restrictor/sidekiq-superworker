@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Sidekiq
   module Superworker
     class WorkerClass
@@ -19,12 +21,12 @@ module Sidekiq
 
         def initialize_superjob(arg_values)
           options = {}
-          
+
           # If an additional argument value is given, it's the superjob's options
           if (arg_values.length == @arg_keys.length + 1) && arg_values.last.is_a?(Hash)
             options = arg_values.last
           elsif @arg_keys.length != arg_values.length
-            raise "Wrong number of arguments for #{name}.perform_async (#{arg_values.length} for #{@arg_keys.length})"
+            fail "Wrong number of arguments for #{name}.perform_async (#{arg_values.length} for #{@arg_keys.length})"
           end
 
           @args = Hash[@arg_keys.zip(arg_values)]
@@ -33,9 +35,9 @@ module Sidekiq
           options
         end
 
-        def create_subjobs(arg_values, options={})
+        def create_subjobs(_arg_values, options = {})
           records = DSLHash.new(@nested_hash, @args).to_records
-          records = records.collect do |id, record|
+          records = records.collect do |_id, record|
             record[:status] = 'initialized'
             record[:superjob_id] = @superjob_id
             record[:superworker_class] = @class_name

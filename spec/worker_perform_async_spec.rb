@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'spec_helper'
 
 describe Sidekiq::Superworker::Worker do
@@ -20,83 +21,83 @@ describe Sidekiq::Superworker::Worker do
 
       it 'creates the correct Subjob records' do
         expected_record_hashes =
-          {1=>
-            {:subjob_id=>1,
-             :parent_id=>nil,
-             :children_ids=>[2, 5],
-             :next_id=>nil,
-             :subworker_class=>"batch",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>[{"user_ids"=>"user_id"}],
-             :arg_values=>[{"user_ids"=>"user_id"}],
-             :status=>"running",
-             :descendants_are_complete=>false},
-           2=>
-            {:subjob_id=>2,
-             :parent_id=>1,
-             :children_ids=>[3,4],
-             :next_id=>nil,
-             :subworker_class=>"batch_child",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>["user_id"],
-             :arg_values=>[100],
-             :status=>"running",
-             :descendants_are_complete=>false},
-           3=>
-            {:subjob_id=>3,
-             :parent_id=>2,
-             :children_ids=>nil,
-             :next_id=>4,
-             :subworker_class=>"Worker1",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>["user_id"],
-             :arg_values=>[100],
-             :status=>"queued",
-             :descendants_are_complete=>false},
-           4=>
-            {:subjob_id=>4,
-             :parent_id=>2,
-             :children_ids=>nil,
-             :next_id=>nil,
-             :subworker_class=>"Worker2",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>["user_id"],
-             :arg_values=>[100],
-             :status=>"initialized",
-             :descendants_are_complete=>false},
-           5=>
-            {:subjob_id=>5,
-             :parent_id=>1,
-             :children_ids=>[6,7],
-             :next_id=>nil,
-             :subworker_class=>"batch_child",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>["user_id"],
-             :arg_values=>[101],
-             :status=>"running",
-             :descendants_are_complete=>false},
-           6=>
-            {:subjob_id=>6,
-             :parent_id=>5,
-             :children_ids=>nil,
-             :next_id=>7,
-             :subworker_class=>"Worker1",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>["user_id"],
-             :arg_values=>[101],
-             :status=>"queued",
-             :descendants_are_complete=>false},
-           7=>
-            {:subjob_id=>7,
-             :parent_id=>5,
-             :children_ids=>nil,
-             :next_id=>nil,
-             :subworker_class=>"Worker2",
-             :superworker_class=>"BatchSuperworker",
-             :arg_keys=>["user_id"],
-             :arg_values=>[101],
-             :status=>"initialized",
-             :descendants_are_complete=>false}}
+          { 1 =>
+            { subjob_id: 1,
+              parent_id: nil,
+              children_ids: [2, 5],
+              next_id: nil,
+              subworker_class: 'batch',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: [{ 'user_ids' => 'user_id' }],
+              arg_values: [{ 'user_ids' => 'user_id' }],
+              status: 'running',
+              descendants_are_complete: false },
+            2 =>
+            { subjob_id: 2,
+              parent_id: 1,
+              children_ids: [3, 4],
+              next_id: nil,
+              subworker_class: 'batch_child',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: ['user_id'],
+              arg_values: [100],
+              status: 'running',
+              descendants_are_complete: false },
+            3 =>
+            { subjob_id: 3,
+              parent_id: 2,
+              children_ids: nil,
+              next_id: 4,
+              subworker_class: 'Worker1',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: ['user_id'],
+              arg_values: [100],
+              status: 'queued',
+              descendants_are_complete: false },
+            4 =>
+            { subjob_id: 4,
+              parent_id: 2,
+              children_ids: nil,
+              next_id: nil,
+              subworker_class: 'Worker2',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: ['user_id'],
+              arg_values: [100],
+              status: 'initialized',
+              descendants_are_complete: false },
+            5 =>
+            { subjob_id: 5,
+              parent_id: 1,
+              children_ids: [6, 7],
+              next_id: nil,
+              subworker_class: 'batch_child',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: ['user_id'],
+              arg_values: [101],
+              status: 'running',
+              descendants_are_complete: false },
+            6 =>
+            { subjob_id: 6,
+              parent_id: 5,
+              children_ids: nil,
+              next_id: 7,
+              subworker_class: 'Worker1',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: ['user_id'],
+              arg_values: [101],
+              status: 'queued',
+              descendants_are_complete: false },
+            7 =>
+            { subjob_id: 7,
+              parent_id: 5,
+              children_ids: nil,
+              next_id: nil,
+              subworker_class: 'Worker2',
+              superworker_class: 'BatchSuperworker',
+              arg_keys: ['user_id'],
+              arg_values: [101],
+              status: 'initialized',
+              descendants_are_complete: false } }
 
         record_hashes = subjobs_to_indexed_hash(Sidekiq::Superworker::Subjob.all)
         record_hashes.length.should eq(expected_record_hashes.length)
@@ -117,28 +118,28 @@ describe Sidekiq::Superworker::Worker do
 
       it 'creates the correct Subjob records' do
         expected_record_hashes = {
-         1=>
-          {:subjob_id=>1,
-           :parent_id=>nil,
-           :children_ids=>[2],
-           :next_id=>nil,
-           :subworker_class=>"Worker1",
-           :superworker_class=>"EmptyArgumentsSuperworker",
-           :arg_keys=>[],
-           :arg_values=>[],
-           :status=>"queued",
-           :descendants_are_complete=>false},
-         2=>
-          {:subjob_id=>2,
-           :parent_id=>1,
-           :children_ids=>nil,
-           :next_id=>nil,
-           :subworker_class=>"Worker2",
-           :superworker_class=>"EmptyArgumentsSuperworker",
-           :arg_keys=>[],
-           :arg_values=>[],
-           :status=>"initialized",
-           :descendants_are_complete=>false}
+          1 =>
+           { subjob_id: 1,
+             parent_id: nil,
+             children_ids: [2],
+             next_id: nil,
+             subworker_class: 'Worker1',
+             superworker_class: 'EmptyArgumentsSuperworker',
+             arg_keys: [],
+             arg_values: [],
+             status: 'queued',
+             descendants_are_complete: false },
+          2 =>
+          { subjob_id: 2,
+            parent_id: 1,
+            children_ids: nil,
+            next_id: nil,
+            subworker_class: 'Worker2',
+            superworker_class: 'EmptyArgumentsSuperworker',
+            arg_keys: [],
+            arg_values: [],
+            status: 'initialized',
+            descendants_are_complete: false }
         }
         record_hashes = subjobs_to_indexed_hash(Sidekiq::Superworker::Subjob.all)
 
@@ -160,50 +161,50 @@ describe Sidekiq::Superworker::Worker do
 
       it 'creates the correct Subjob records' do
         expected_record_hashes = {
-          1=>
-            {:subjob_id=>1,
-             :parent_id=>nil,
-             :children_ids=>nil,
-             :next_id=>2,
-             :subworker_class=>"Worker1",
-             :superworker_class=>"NestedSuperworker",
-             :arg_keys=>[],
-             :arg_values=>[],
-             :status=>"queued",
-             :descendants_are_complete=>false},
-          2=>
-            {:subjob_id=>2,
-             :parent_id=>nil,
-             :children_ids=>[3],
-             :next_id=>nil,
-             :subworker_class=>"ChildSuperworker",
-             :superworker_class=>"NestedSuperworker",
-             :arg_keys=>[],
-             :arg_values=>[],
-             :status=>"initialized",
-             :descendants_are_complete=>false},
-          3=>
-            {:subjob_id=>3,
-             :parent_id=>2,
-             :children_ids=>[4],
-             :next_id=>nil,
-             :subworker_class=>"Worker2",
-             :superworker_class=>"NestedSuperworker",
-             :arg_keys=>[],
-             :arg_values=>[],
-             :status=>"initialized",
-             :descendants_are_complete=>false},
-          4=>
-            {:subjob_id=>4,
-             :parent_id=>3,
-             :children_ids=>nil,
-             :next_id=>nil,
-             :subworker_class=>"Worker3",
-             :superworker_class=>"NestedSuperworker",
-             :arg_keys=>[],
-             :arg_values=>[],
-             :status=>"initialized",
-             :descendants_are_complete=>false}
+          1 =>
+            { subjob_id: 1,
+              parent_id: nil,
+              children_ids: nil,
+              next_id: 2,
+              subworker_class: 'Worker1',
+              superworker_class: 'NestedSuperworker',
+              arg_keys: [],
+              arg_values: [],
+              status: 'queued',
+              descendants_are_complete: false },
+          2 =>
+            { subjob_id: 2,
+              parent_id: nil,
+              children_ids: [3],
+              next_id: nil,
+              subworker_class: 'ChildSuperworker',
+              superworker_class: 'NestedSuperworker',
+              arg_keys: [],
+              arg_values: [],
+              status: 'initialized',
+              descendants_are_complete: false },
+          3 =>
+            { subjob_id: 3,
+              parent_id: 2,
+              children_ids: [4],
+              next_id: nil,
+              subworker_class: 'Worker2',
+              superworker_class: 'NestedSuperworker',
+              arg_keys: [],
+              arg_values: [],
+              status: 'initialized',
+              descendants_are_complete: false },
+          4 =>
+            { subjob_id: 4,
+              parent_id: 3,
+              children_ids: nil,
+              next_id: nil,
+              subworker_class: 'Worker3',
+              superworker_class: 'NestedSuperworker',
+              arg_keys: [],
+              arg_values: [],
+              status: 'initialized',
+              descendants_are_complete: false }
         }
 
         record_hashes = subjobs_to_indexed_hash(Sidekiq::Superworker::Subjob.all)
@@ -219,123 +220,68 @@ describe Sidekiq::Superworker::Worker do
       before :all do
         @superjob_id = worker_perform_async(ComplexSuperworker)
       end
-      
+
       after :all do
         clean_datastores
       end
 
       it 'creates the correct Subjob records' do
         expected_record_hashes = {
-         1=>
-          {:subjob_id=>1,
-           :parent_id=>nil,
-           :children_ids=>[2, 3, 10],
-           :next_id=>nil,
-           :subworker_class=>"Worker1",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"queued",
-           :descendants_are_complete=>false},
-         2=>
-          {:subjob_id=>2,
-           :parent_id=>1,
-           :children_ids=>nil,
-           :next_id=>3,
-           :subworker_class=>"Worker2",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["second_argument"],
-           :arg_values=>[101],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         3=>
-          {:subjob_id=>3,
-           :parent_id=>1,
-           :children_ids=>[4, 5],
-           :next_id=>10,
-           :subworker_class=>"Worker3",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["second_argument"],
-           :arg_values=>[101],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         4=>
-          {:subjob_id=>4,
-           :parent_id=>3,
-           :children_ids=>nil,
-           :next_id=>5,
-           :subworker_class=>"Worker4",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         5=>
-          {:subjob_id=>5,
-           :parent_id=>3,
-           :children_ids=>[6, 7],
-           :next_id=>nil,
-           :subworker_class=>"parallel",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>[],
-           :arg_values=>[],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-           6=>
-          {:subjob_id=>6,
-           :parent_id=>5,
-           :children_ids=>nil,
-           :next_id=>7,
-           :subworker_class=>"Worker5",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         7=>
-          {:subjob_id=>7,
-           :parent_id=>5,
-           :children_ids=>[8, 9],
-           :next_id=>nil,
-           :subworker_class=>"Worker6",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         8=>
-          {:subjob_id=>8,
-           :parent_id=>7,
-           :children_ids=>nil,
-           :next_id=>9,
-           :subworker_class=>"Worker7",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         9=>
-          {:subjob_id=>9,
-           :parent_id=>7,
-           :children_ids=>nil,
-           :next_id=>nil,
-           :subworker_class=>"Worker8",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"initialized",
-           :descendants_are_complete=>false},
-         10=>
-          {:subjob_id=>10,
-           :parent_id=>1,
-           :children_ids=>nil,
-           :next_id=>nil,
-           :subworker_class=>"Worker9",
-           :superworker_class=>"ComplexSuperworker",
-           :arg_keys=>["first_argument"],
-           :arg_values=>[100],
-           :status=>"initialized",
-           :descendants_are_complete=>false}
+          1 =>
+           { subjob_id: 1,
+             parent_id: nil,
+             children_ids: [2, 3, 5],
+             next_id: nil,
+             subworker_class: 'Worker1',
+             superworker_class: 'ComplexSuperworker',
+             arg_keys: ['first_argument'],
+             arg_values: [100],
+             status: 'queued',
+             descendants_are_complete: false },
+          2 =>
+          { subjob_id: 2,
+            parent_id: 1,
+            children_ids: nil,
+            next_id: 3,
+            subworker_class: 'Worker2',
+            superworker_class: 'ComplexSuperworker',
+            arg_keys: ['second_argument'],
+            arg_values: [101],
+            status: 'initialized',
+            descendants_are_complete: false },
+          3 =>
+          { subjob_id: 3,
+            parent_id: 1,
+            children_ids: [4],
+            next_id: 5,
+            subworker_class: 'Worker3',
+            superworker_class: 'ComplexSuperworker',
+            arg_keys: ['second_argument'],
+            arg_values: [101],
+            status: 'initialized',
+            descendants_are_complete: false },
+          4 =>
+          { subjob_id: 4,
+            parent_id: 3,
+            children_ids: nil,
+            next_id: nil,
+            subworker_class: 'Worker4',
+            superworker_class: 'ComplexSuperworker',
+            arg_keys: ['first_argument'],
+            arg_values: [100],
+            status: 'initialized',
+            descendants_are_complete: false },
+          5 =>
+          { subjob_id: 5,
+            parent_id: 1,
+            children_ids: nil,
+            next_id: nil,
+            subworker_class: 'Worker5',
+            superworker_class: 'ComplexSuperworker',
+            arg_keys: ['first_argument'],
+            arg_values: [100],
+            status: 'initialized',
+            descendants_are_complete: false }
         }
 
         record_hashes = subjobs_to_indexed_hash(Sidekiq::Superworker::Subjob.all)
@@ -347,7 +293,7 @@ describe Sidekiq::Superworker::Worker do
       end
 
       it 'creates enough Subjob records' do
-        Sidekiq::Superworker::Subjob.count.should == 10
+        Sidekiq::Superworker::Subjob.count.should == 5
       end
 
       it 'queues root-level subjobs' do
@@ -387,19 +333,19 @@ describe Sidekiq::Superworker::Worker do
 
       it 'sets the correct initial statuses' do
         subjob_statuses_should_equal(
-          [1,2,5] => 'running',
-          [3,6] => 'queued',
-          [4,7] => 'initialized'
+          [1, 2, 5] => 'running',
+          [3, 6] => 'queued',
+          [4, 7] => 'initialized'
         )
       end
 
       it 'sets the correct statuses after subjob #3 completes' do
         trigger_completion_of_sidekiq_job(3)
         subjob_statuses_should_equal(
-          [1,2,5] => 'running',
+          [1, 2, 5] => 'running',
           [3] => 'complete',
           [7] => 'initialized',
-          [4,6] => 'queued'
+          [4, 6] => 'queued'
         )
       end
 
@@ -407,31 +353,10 @@ describe Sidekiq::Superworker::Worker do
         trigger_completion_of_sidekiq_job(3)
         trigger_completion_of_sidekiq_job(4)
         subjob_statuses_should_equal(
-          [1,5] => 'running',
-          [2,3,4] => 'complete',
+          [1, 5] => 'running',
+          [2, 3, 4] => 'complete',
           [7] => 'initialized',
           [6] => 'queued'
-        )
-      end
-
-      it 'sets the correct statuses after subjob #6 completes' do
-        trigger_completion_of_sidekiq_job(3)
-        trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(6)
-        subjob_statuses_should_equal(
-          [1,5] => 'running',
-          [2,3,4,6] => 'complete',
-          [7] => 'queued'
-        )
-      end
-
-      it 'sets the correct statuses after subjob #7 completes' do
-        trigger_completion_of_sidekiq_job(3)
-        trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(6)
-        trigger_completion_of_sidekiq_job(7)
-        subjob_statuses_should_equal(
-          (1..7) => 'complete'
         )
       end
     end
@@ -446,7 +371,7 @@ describe Sidekiq::Superworker::Worker do
         subjob_statuses_should_equal(
           1 => 'complete',
           2 => 'queued',
-          (3..10) => 'initialized' 
+          (3..5) => 'initialized'
         )
       end
 
@@ -457,7 +382,7 @@ describe Sidekiq::Superworker::Worker do
           1 => 'complete',
           2 => 'complete',
           3 => 'queued',
-          (4..10) => 'initialized' 
+          (4..5) => 'initialized'
         )
       end
 
@@ -470,7 +395,7 @@ describe Sidekiq::Superworker::Worker do
           2 => 'complete',
           3 => 'complete',
           4 => 'queued',
-          (5..10) => 'initialized' 
+          5 => 'initialized'
         )
       end
 
@@ -484,52 +409,7 @@ describe Sidekiq::Superworker::Worker do
           2 => 'complete',
           3 => 'complete',
           4 => 'complete',
-          5 => 'running',
-          6 => 'queued',
-          7 => 'queued',
-          (8..10) => 'initialized' 
-        )
-      end
-
-      # Complete #7 before #6 to test parallel block
-      it 'sets the correct statuses after subjob #7 completes' do
-        trigger_completion_of_sidekiq_job(1)
-        trigger_completion_of_sidekiq_job(2)
-        trigger_completion_of_sidekiq_job(3)
-        trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(7)
-        subjob_statuses_should_equal(
-          1 => 'complete',
-          2 => 'complete',
-          3 => 'complete',
-          4 => 'complete',
-          5 => 'running',
-          6 => 'queued',
-          7 => 'complete',
-          8 => 'queued',
-          (9..10) => 'initialized' 
-        )
-      end
-
-      it 'sets the correct statuses after subjobs #8 and #9 complete' do
-        trigger_completion_of_sidekiq_job(1)
-        trigger_completion_of_sidekiq_job(2)
-        trigger_completion_of_sidekiq_job(3)
-        trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(7)
-        trigger_completion_of_sidekiq_job(8)
-        trigger_completion_of_sidekiq_job(9)
-        subjob_statuses_should_equal(
-          1 => 'complete',
-          2 => 'complete',
-          3 => 'complete',
-          4 => 'complete',
-          5 => 'running',
-          6 => 'queued',
-          7 => 'complete',
-          8 => 'complete',
-          9 => 'complete',
-          10 => 'initialized' 
+          5 => 'queued'
         )
       end
 
@@ -538,42 +418,19 @@ describe Sidekiq::Superworker::Worker do
         trigger_completion_of_sidekiq_job(2)
         trigger_completion_of_sidekiq_job(3)
         trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(7)
-        trigger_completion_of_sidekiq_job(8)
-        trigger_completion_of_sidekiq_job(9)
-        trigger_completion_of_sidekiq_job(6)
+        trigger_completion_of_sidekiq_job(5)
         subjob_statuses_should_equal(
           1 => 'complete',
           2 => 'complete',
           3 => 'complete',
           4 => 'complete',
-          5 => 'complete',
-          6 => 'complete',
-          7 => 'complete',
-          8 => 'complete',
-          9 => 'complete',
-          10 => 'queued' 
-        )
-      end
-
-      it 'sets the correct statuses after subjob #10 completes' do
-        trigger_completion_of_sidekiq_job(1)
-        trigger_completion_of_sidekiq_job(2)
-        trigger_completion_of_sidekiq_job(3)
-        trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(7)
-        trigger_completion_of_sidekiq_job(8)
-        trigger_completion_of_sidekiq_job(9)
-        trigger_completion_of_sidekiq_job(6)
-        trigger_completion_of_sidekiq_job(10)
-        subjob_statuses_should_equal(
-          (1..10) => 'complete'
+          5 => 'complete'
         )
       end
     end
 
-    describe "job completion" do
-      it "removes all jobs after superworker completion if option is set accordingly" do
+    describe 'job completion' do
+      it 'removes all jobs after superworker completion if option is set accordingly' do
         original_value = Sidekiq::Superworker.options[:delete_subjobs_after_superjob_completes]
         Sidekiq::Superworker.options[:delete_subjobs_after_superjob_completes] = true
 
@@ -582,42 +439,29 @@ describe Sidekiq::Superworker::Worker do
         trigger_completion_of_sidekiq_job(2)
         trigger_completion_of_sidekiq_job(3)
         trigger_completion_of_sidekiq_job(4)
-        trigger_completion_of_sidekiq_job(7)
-        trigger_completion_of_sidekiq_job(8)
-        trigger_completion_of_sidekiq_job(9)
-        trigger_completion_of_sidekiq_job(6)
-        trigger_completion_of_sidekiq_job(10)
+        trigger_completion_of_sidekiq_job(5)
 
         Sidekiq::Superworker.options[:delete_subjobs_after_superjob_completes] = original_value
         Sidekiq::Superworker::Subjob.count.should == 0
       end
     end
 
-    describe "failing workers" do
+    describe 'failing workers' do
       it "sets the status to 'failed'" do
         superjob_id = FailingSuperworker.perform_async(100)
         trigger_completion_of_sidekiq_job(1)
-        trigger_exception_in_sidekiq_job(3)
         subjob_statuses_should_equal(
           1 => 'complete',
-          2 => 'running',
-          3 => 'failed',
-          4 => 'queued',
-          5 => 'initialized'
+          2 => 'queued'
         )
       end
 
       it "doesn't run jobs downstream from the failure" do
         superjob_id = FailingSuperworker.perform_async(100)
-        trigger_completion_of_sidekiq_job(1)
-        trigger_exception_in_sidekiq_job(3)
-        trigger_completion_of_sidekiq_job(4)
+        trigger_exception_in_sidekiq_job(1)
         subjob_statuses_should_equal(
-          1 => 'complete',
-          2 => 'running',
-          3 => 'failed',
-          4 => 'complete',
-          5 => 'initialized'
+          1 => 'failed',
+          2 => 'initialized'
         )
       end
     end

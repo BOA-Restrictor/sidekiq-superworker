@@ -1,18 +1,21 @@
+# frozen_string_literal: true
 module Sidekiq
   module Superworker
     class Subjob
       include ActiveModel::Validations
       include ActiveModel::Naming
 
-      ATTRIBUTES = [:subjob_id, :superjob_id, :parent_id, :next_id, :children_ids, :subworker_class,
-        :superworker_class, :arg_keys, :arg_values, :status, :descendants_are_complete, :meta]
+      ATTRIBUTES = %i[
+        subjob_id superjob_id parent_id next_id children_ids subworker_class superworker_class
+        arg_keys arg_values status descendants_are_complete meta
+      ].freeze
 
-      attr_accessor *ATTRIBUTES
+      attr_accessor(*ATTRIBUTES)
 
       validates_presence_of :subjob_id, :subworker_class, :superworker_class, :status
 
       class << self
-        def create(attributes={})
+        def create(attributes = {})
           if attributes.is_a?(Array)
             attributes.collect { |attribute| create(attribute) }
           else
@@ -69,7 +72,7 @@ module Sidekiq
           end
         end
 
-        def transaction(&block)
+        def transaction(&_block)
           result = nil
           Sidekiq.redis do |conn|
             conn.multi do
@@ -88,7 +91,7 @@ module Sidekiq
         end
       end
 
-      def initialize(params={})
+      def initialize(params = {})
         if params.present?
           params.each do |attribute, value|
             public_send("#{attribute}=", value)
@@ -100,23 +103,23 @@ module Sidekiq
       end
 
       def save
-        return false unless self.valid?
+        return false unless valid?
 
         self.class.transaction do |conn|
           conn.mapped_hmset(key, to_param)
-          conn.expire(key,Superworker.options[:superjob_expiration]) if Superworker.options[:superjob_expiration]
+          conn.expire(key, Superworker.options[:superjob_expiration]) if Superworker.options[:superjob_expiration]
         end
         true
       end
 
       def update_attributes(pairs = {})
         pairs.each_pair { |attribute, value| public_send("#{attribute}=", value) }
-        self.save
+        save
       end
 
       def update_attribute(attribute, value)
-        public_send("#{attribute.to_s}=", value)
-        return false unless self.valid?
+        public_send("#{attribute}=", value)
+        return false unless valid?
         Sidekiq.redis do |conn|
           conn.hset(key, attribute.to_s, value.to_json)
         end
@@ -150,7 +153,7 @@ module Sidekiq
       end
 
       def ==(other)
-        self.jid == other.jid
+        jid == other.jid
       end
 
       def to_info
@@ -160,7 +163,7 @@ module Sidekiq
       def to_param
         param = {}
         ATTRIBUTES.each do |attribute|
-          param["#{attribute.to_s}".to_sym] = public_send(attribute).to_json
+          param[attribute.to_s.to_sym] = public_send(attribute).to_json
         end
         param
       end

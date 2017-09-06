@@ -7,7 +7,7 @@ Overview
 
 Sidekiq Superworker lets you create superworkers, which are simple or complex graphs of Sidekiq workers.
 
-For example, you can define complex graphs of workers and use both serial and parallel worker configurations:
+For example, you can define complex graphs of workers and use both serial worker configurations:
 
 [![](https://raw.github.com/socialpandas/sidekiq-superworker/master/doc/diagram-complex.png)](https://raw.github.com/socialpandas/sidekiq-superworker/master/doc/diagram-complex.png)
 
@@ -17,20 +17,10 @@ For example, you can define complex graphs of workers and use both serial and pa
 Superworker.define(:MySuperworker, :user_id, :comment_id) do
   Worker1 :user_id
   Worker2 :user_id do
-    parallel do
-      Worker3 :comment_id do
-        Worker4 :comment_id
-        Worker5 :comment_id
-      end
-      Worker6 :user_id do
-        parallel do
-          Worker7 :user_id
-          Worker8 :user_id
-          Worker9 :user_id
-        end
-      end
+    Worker3 :comment_id do
+      Worker4 :comment_id
     end
-    Worker10 :comment_id
+    Worker5 :comment_id
   end
 end
 ```

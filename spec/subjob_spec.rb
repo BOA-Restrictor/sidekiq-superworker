@@ -52,7 +52,7 @@ describe Sidekiq::Superworker::Subjob do
 
   describe '.find_by_superjob_jid' do
     it 'finds the superjobs\'s subjobs' do
-      superjob_jid = SimpleSuperworker.perform_async(10, 11)
+      superjob_jid = SimpleSuperworker.perform_async(first_argument: 10, second_argument: 11)
       subjobs = described_class.find_by_superjob_jid(superjob_jid)
       subjobs.map(&:subworker_class).should =~ %w[Worker1 Worker2]
     end

@@ -12,7 +12,7 @@ describe Sidekiq::Superworker::Worker do
   describe '.perform_async' do
     context 'batch superworker' do
       before :all do
-        BatchSuperworker.perform_async([100, 101])
+        BatchSuperworker.perform_async(user_ids: [100, 101])
       end
 
       after :all do
@@ -319,7 +319,7 @@ describe Sidekiq::Superworker::Worker do
 
     context 'batch superworker' do
       before :each do
-        BatchSuperworker.perform_async([100, 101])
+        BatchSuperworker.perform_async(user_ids: [100, 101])
       end
 
       # subjob_id - subworker_class
@@ -448,7 +448,7 @@ describe Sidekiq::Superworker::Worker do
 
     describe 'failing workers' do
       it "sets the status to 'failed'" do
-        superjob_id = FailingSuperworker.perform_async(100)
+        superjob_id = FailingSuperworker.perform_async(first_argument: 100)
         trigger_completion_of_sidekiq_job(1)
         subjob_statuses_should_equal(
           1 => 'complete',
@@ -457,7 +457,7 @@ describe Sidekiq::Superworker::Worker do
       end
 
       it "doesn't run jobs downstream from the failure" do
-        superjob_id = FailingSuperworker.perform_async(100)
+        superjob_id = FailingSuperworker.perform_async(first_argument: 100)
         trigger_exception_in_sidekiq_job(1)
         subjob_statuses_should_equal(
           1 => 'failed',
@@ -468,6 +468,6 @@ describe Sidekiq::Superworker::Worker do
   end
 
   def worker_perform_async(worker)
-    worker.perform_async(100, 101)
+    worker.perform_async(first_argument: 100, second_argument: 101)
   end
 end

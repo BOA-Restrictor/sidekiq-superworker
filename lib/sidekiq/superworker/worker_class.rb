@@ -10,7 +10,7 @@ module Sidekiq
           true
         end
 
-        def perform_async(*arg_values)
+        def perform_async(**arg_values)
           options = initialize_superjob(arg_values)
           subjobs = create_subjobs(arg_values, options)
           SuperjobProcessor.create(@superjob_id, @class_name, arg_values, subjobs, options)
@@ -49,11 +49,18 @@ module Sidekiq
                 arg_key.is_a?(Symbol) ? @args[arg_key] : arg_key
               end
             end
+            record[:arg_values] = [hash_values(record[:arg_values], record[:arg_keys], record[:subworker_class])]
             record
           end
           Sidekiq::Superworker::Subjob.transaction do
             Sidekiq::Superworker::Subjob.create(records)
           end
+        end
+
+        def hash_values(values, keys, klass)
+          return values if klass = "batch_child" || klass = "batch"          
+          values[0] = [:event, values[0]]
+          Hash[values].slice(:event, *keys)
         end
       end
     end

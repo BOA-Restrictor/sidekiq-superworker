@@ -8,6 +8,9 @@ Dir.glob("#{directory}/superworker/server/*.rb") { |file| require file }
 
 module Sidekiq
   module Superworker
+
+    class Exit < StandardError; end
+
     DEFAULTS = {
       delete_subjobs_after_superjob_completes: true,
       subjob_redis_prefix: 'subjob',

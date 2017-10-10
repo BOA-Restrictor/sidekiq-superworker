@@ -138,6 +138,10 @@ When a subjob dies due to too many retries, the jobs that depend on it will neve
 Sidekiq::Superworker.options[:superjob_expiration] = 2592000 # 1 Month
 ```
 
+#### Exit out of a Superworker
+
+When wanting to exit out of a SuperWorker, a `Sidekiq::SuperWorker::Exit` error must be raised in the worker(subjob) which will then mark the Superworker as complete.
+
 ### Logging
 
 To make debugging easier, Sidekiq Superworker provides detailed log messages when its logger is set to the DEBUG level:

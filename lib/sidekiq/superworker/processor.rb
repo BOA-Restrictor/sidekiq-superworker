@@ -8,6 +8,13 @@ module Sidekiq
         complete_item(item)
       end
 
+      def complete_all(item, exception)
+        Superworker.debug "JID ##{item['jid']}: Sidekiq job exiting gracefully. Message: #{exception.to_json}"
+
+        subjob = Subjob.find_by_jid(item['jid'])
+        SuperjobProcessor.complete(subjob.superjob_id)
+      end
+
       def error(worker, item, _queue, exception)
         fail "Job has nil jid: #{item}" if item['jid'].nil?
 
